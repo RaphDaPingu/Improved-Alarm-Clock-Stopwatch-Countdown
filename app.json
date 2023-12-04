@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "name": "Improved-Alarm-Clock-Stopwatch-Countdown",
+    "slug": "Improved-Alarm-Clock-Stopwatch-Countdown"
+  }
+}
