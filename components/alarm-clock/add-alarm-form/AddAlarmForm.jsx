@@ -5,18 +5,19 @@ import axios from 'axios';
 import WheelPicker from 'react-native-wheely';
 import {Audio} from 'expo-av';
 
-const AddAlarmForm = ({fetchAlarms, setIsFormVisible}) => {
+const AddAlarmForm = ({setAlarms, fetchAlarms, setIsFormVisible}) => {
   const sound = new Audio.Sound();
 
-  const [hours, setHours] = useState('');
-  const [minutes, setMinutes] = useState('');
-  const [seconds, setSeconds] = useState('');
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
   const [currentTime, setCurrentTime] = useState({
     hours: null,
     minutes: null,
     seconds: null
   });
+
 
   useEffect(() => {
     // Function to get current time
@@ -30,30 +31,29 @@ const AddAlarmForm = ({fetchAlarms, setIsFormVisible}) => {
       return { hours, minutes, seconds };
     };
 
-    // Set initial time when component mounts
-    setCurrentTime(getCurrentTime());
+    const setInitialTime = () => {
+      // Set initial time when component mounts
+      const initialTime = getCurrentTime();
+      
+      setCurrentTime(initialTime);
+  
+      setHours(initialTime.hours);
+      setMinutes(initialTime.minutes);
+      setSeconds(initialTime.seconds);
+    };
+  
+    setInitialTime();
   }, []); // Empty dependency array ensures this effect runs only once
 
   const optionsHours = generateOptions(23);
   const optionsMinutesSeconds = generateOptions(59);
 
-  const HOURS = Array(24)
-    .fill(0)
-    .map((_, index) => {
-      return {
-        value: index,
-        label: index < 10 ? "0" + index : index
-      };
-    });
-
   const handleSubmit = async () => {
-    if (!hours || !minutes || !seconds) {
-      Alert.alert('Error', 'Please enter all fields');
-      return;
-    }
+    const newHours = hours.toString().padStart(2, '0');
+    const newMinutes = minutes.toString().padStart(2, '0');
+    const newSeconds = seconds.toString().padStart(2, '0');
 
-    const formattedTime = `${hours}:${minutes}:${seconds}`;
-    console.log(formattedTime);
+    const formattedTime = `${newHours}:${newMinutes}:${newSeconds}`;
 
     try {
       // Fetch existing alarms from the server
@@ -75,13 +75,12 @@ const AddAlarmForm = ({fetchAlarms, setIsFormVisible}) => {
 
         Alert.alert('Success', `Alarm set for ${formattedTime}`);
 
-        // Clear input fields after submission
-        setHours('');
-        setMinutes('');
-        setSeconds('');
+        setHours(0);
+        setMinutes(0);
+        setSeconds(0);
 
+        setAlarms(fetchAlarms());
         setIsFormVisible(false);
-        fetchAlarms();
       }
     } catch (error) {
       console.error('Error adding alarm:', error);
@@ -123,30 +122,32 @@ const AddAlarmForm = ({fetchAlarms, setIsFormVisible}) => {
     return null; // Or loading indicator or any other placeholder
   }
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.pickerRow}>
-        <WheelPicker
-          selectedIndex={optionsHours[currentTime.hours]}
-          options={optionsHours}
-          onChange={(index) => {setHours(optionsHours[index]); playSound();}}
-        />
-        <WheelPicker
-          selectedIndex={optionsMinutesSeconds[currentTime.minutes]}
-          options={optionsMinutesSeconds}
-          onChange={(index) => {setMinutes(optionsMinutesSeconds[index]); playSound();}}
-        />
-        <WheelPicker
-          selectedIndex={optionsMinutesSeconds[currentTime.seconds]}
-          options={optionsMinutesSeconds}
-          onChange={(index) => {setSeconds(optionsMinutesSeconds[index]); playSound();}}
-        />
+  else {
+    return (
+      <View style={styles.container}>
+        <View style={styles.pickerRow}>
+          <WheelPicker
+            selectedIndex={optionsHours[currentTime.hours]}
+            options={optionsHours}
+            onChange={(index) => {setHours(optionsHours[index]); playSound();}}
+          />
+          <WheelPicker
+            selectedIndex={optionsMinutesSeconds[currentTime.minutes]}
+            options={optionsMinutesSeconds}
+            onChange={(index) => {setMinutes(optionsMinutesSeconds[index]); playSound();}}
+          />
+          <WheelPicker
+            selectedIndex={optionsMinutesSeconds[currentTime.seconds]}
+            options={optionsMinutesSeconds}
+            onChange={(index) => {setSeconds(optionsMinutesSeconds[index]); playSound();}}
+          />
+        </View>
+        <Button title="Submit" color="green" onPress={handleSubmit} />
+        <Text></Text>
+        <Button title="Close" color="red" onPress={handleClose} />
       </View>
-      <Button title="Submit" color="green" onPress={handleSubmit} />
-      <Text></Text>
-      <Button title="Close" color="red" onPress={handleClose} />
-    </View>
-  );
-};
+    );
+  };
+}
 
 export default AddAlarmForm;

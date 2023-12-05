@@ -17,10 +17,10 @@ const Alarm = ({id, time, deleteAlarm}) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.timeText}>{time}</Text>
-        <Text style={styles.labelText}>Alarm</Text>
+        <Text style={styles.labelText}>{id}</Text>
       </View>
       
-      <Feather name="x" size={24} color="white" onPress={handleDelete} />
+      <Feather name="x" size={30} color="white" onPress={handleDelete} />
     </TouchableOpacity>
   );
 };

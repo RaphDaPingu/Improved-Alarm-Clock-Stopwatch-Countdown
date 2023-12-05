@@ -45,7 +45,6 @@ const Home = () => {
           const response = await axios.get('http://10.100.102.16:3000/alarmClocks');
           const data = response.data; // Use response.data instead of JSON.stringify(response)
           setAlarms(data);
-          console.log(alarms);
         }
         
         catch (error) {
@@ -63,6 +62,21 @@ const Home = () => {
         catch (error) {
             console.log('Error deleting alarm:', error);
         }
+    }
+
+    const updateAlarm = async({ id }) => {
+        // TODO: Open modal very similar to AddAlarmForm.jsx after pressing an alarm, allowing the user to change the time of the current alarm
+
+        // try {
+        //     await axios.put(`http://10.100.102.16:3000/alarmClocks/${id}`,
+        //     {}
+        //     );
+        //     setAlarms(fetchAlarms());
+        // }
+          
+        // catch (error) {
+        //     console.log('Error updating alarm:', error);
+        // }
     }
 
     const renderAlarm = ({ item }) => {
@@ -134,7 +148,7 @@ const Home = () => {
                         </>
                     }
 
-                    <AddAlarmButton fetchAlarms={fetchAlarms}></AddAlarmButton>
+                    <AddAlarmButton setAlarms={setAlarms} fetchAlarms={fetchAlarms}></AddAlarmButton>
                 </>
                 }
 
